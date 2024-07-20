@@ -26,6 +26,14 @@ public class ResponseUtility {
     }
 
     @SuppressWarnings({"unused", "unchecked"})
+    public static <T> ResponseEntity<Response<T>> buildErrorResponseEntity(String code, HttpStatus httpStatus, String errorMessage, T payload, Logger log) {
+        log.info(ERROR_CODE_MESSAGE_FORMAT, code, errorMessage);
+        Response<T> response = new Response<>();
+        return new ResponseEntity<>(response.buildErrorResponse(code, errorMessage, payload),
+                httpStatus);
+    }
+
+    @SuppressWarnings({"unused", "unchecked"})
     public static <T> ResponseEntity<Response<T>> buildErrorResponseEntityFromServiceException(ServiceHttpStatusException e) {
         Response<T> response = new Response<>();
         return new ResponseEntity<>(response.buildErrorResponse(e.getCode(), e.getResponseMessage()),

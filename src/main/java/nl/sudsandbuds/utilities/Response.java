@@ -32,4 +32,14 @@ public class Response<T> {
         this.setPayload(null);
         return this;
     }
+
+    public Response<T> buildErrorResponse(String errorCode, String errorMessage, T payload) {
+        this.setSuccess(false);
+        this.setError(new ErrorDetails());
+        this.error.setCode(errorCode);
+        this.error.setMessage(errorMessage);
+        this.error.setTraceId(MDC.get("traceId"));
+        this.setPayload(payload);
+        return this;
+    }
 }
