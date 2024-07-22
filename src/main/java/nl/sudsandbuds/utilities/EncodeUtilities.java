@@ -4,6 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class EncodeUtilities {
+    /**
+     * Utility common method that returns an encoded url
+     * @param toBeEncoded url to be encoded
+     */
     @SuppressWarnings({"unused","unchecked"})
     public static String encodeURI(String toBeEncoded) {
         String encoded = "";
