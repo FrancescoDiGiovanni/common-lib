@@ -64,6 +64,21 @@ public class ResponseUtility {
     }
 
     /**
+     * Response utility that builds a error response from a service exception
+     * @param e service http status exception thrown by service exception
+     * @Param log slf4j logger
+     */
+    @SuppressWarnings({"unused", "unchecked"})
+    public static <T> ResponseEntity<Response<T>> buildErrorResponseEntityFromServiceException(ServiceHttpStatusException e, Logger log) {
+        log.error(ERROR_CODE_MESSAGE_FORMAT, e.getCode(), e.getMessage(), e);
+        Response<T> response = new Response<>();
+        return new ResponseEntity<>(
+                response.buildErrorResponse(e.getCode(), e.getMessage()),
+                e.getHttpStatus()
+        );
+    }
+
+    /**
      * Response utility that builds a error response from a service
      * @param responseEntity response from a service
      * @param log slf4j logger
@@ -100,6 +115,27 @@ public class ResponseUtility {
      */
     @SuppressWarnings({"unused", "unchecked"})
     public static <T> ResponseEntity<Response<T>> buildResponseEntityFromFeignClientException(FeignException e, String serviceCode) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Response<T> errorResponse = new Response<>();
+        try {
+            errorResponse = objectMapper.readValue(e.contentUTF8(), Response.class);
+        } catch (Exception e1) {
+            HttpStatus httpStatus = null;
+            if ( e.status() == -1 )
+                httpStatus = HttpStatus.valueOf(500);
+            else
+                httpStatus = HttpStatus.valueOf(e.status());
+
+            return new ResponseEntity<>(errorResponse.buildErrorResponse(serviceCode + FEIGN_CLIENT_ERROR_CODE_NUMBER, FEIGN_CLIENT_ERROR_RESPONSE_MESSAGE), httpStatus);
+        }
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(e.status()));
+
+    }
+
+    @SuppressWarnings({"unused", "unchecked"})
+    public static <T> ResponseEntity<Response<T>> buildResponseEntityFromFeignClientException(FeignException e, String serviceCode, Logger log) {
+        log.error(e.getMessage(), e);
         ObjectMapper objectMapper = new ObjectMapper();
         Response<T> errorResponse = new Response<>();
         try {
