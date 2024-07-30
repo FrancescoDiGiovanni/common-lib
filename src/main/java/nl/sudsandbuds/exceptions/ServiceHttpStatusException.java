@@ -16,4 +16,10 @@ public class ServiceHttpStatusException extends ServiceException {
 
     }
 
+    public ServiceHttpStatusException(String code, String message, HttpStatus httpStatus) {
+        super(code, message);
+        this.httpStatus = httpStatus;
+        this.responseMessage = "";
+    }
+
 }
